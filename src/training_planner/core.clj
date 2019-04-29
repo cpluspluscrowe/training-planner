@@ -61,8 +61,8 @@
                      ))
 
 (defn get-workout-tss [workout]
-  (let [intensity (:type intensities)]
-    (* (intensity intensity-tss) (:duration workout))
+  (let [rpe (intensities (:type workout))]
+    (* (get intensity-tss rpe) (:duration workout))
     ))
 
 

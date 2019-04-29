@@ -7,3 +7,7 @@
     (is (= 0 0))))
 
 
+(deftest get-workout-tss-test
+  (let [workout (struct workout :RI 3)]
+    (is (get-workout-tss workout) 3)
+   ))
