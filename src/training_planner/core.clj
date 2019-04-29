@@ -65,6 +65,10 @@
     (* (get intensity-tss rpe) (:duration workout))
     ))
 
+(defn have-tss-for-workout? [workout goal-tss]
+(> (get-workout-tss workout) goal-tss))
+
+
 
 (defn TSS [run-type-durations]
   (let [running-interval (:RI run-type-durations)
