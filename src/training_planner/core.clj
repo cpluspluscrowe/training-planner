@@ -1,4 +1,5 @@
 (ns training-planner.core
+  (:use clojure.test)
   (:gen-class))
 
                                         ; shoot for M: 80, T: 130, W: 50 Th: 100: F: 0, S: 300, S: 50
