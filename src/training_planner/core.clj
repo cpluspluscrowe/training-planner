@@ -6,11 +6,6 @@
 
 (defstruct workout :type :duration)
 
-(defn get-workout-tss [workout]
-  (let [intensity (workout.type intensities)]
-    (* (intensity intensity-tss) workout.duration)
-    ))
-
 (def intensities (hash-map
                    :RI 10
                    :TR 8.5
@@ -63,6 +58,12 @@
                      9 120
                      10 140
                      ))
+
+(defn get-workout-tss [workout]
+  (let [intensity (:type intensities)]
+    (* (intensity intensity-tss) (:duration workout))
+    ))
+
 
 (defn TSS [run-type-durations]
   (let [running-interval (:RI run-type-durations)
