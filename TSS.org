@@ -1,0 +1,20 @@
+
+* Training Stress Score
+TSS = (sec x NP® x IF®)/(FTP x 3600) x 100
+
+NP - normalized power
+if - intensity factor
+FTP is functional threshold power (berst average power for one-hour race or test)
+sec is duration of the workout in seconds
+
+TSS per hour by REP:
+1 - 20
+2 - 30
+3 - 40
+4 - 50
+5 - 60
+6 - 70
+7 - 80
+8 - 100
+9 - 120
+10 - 140
