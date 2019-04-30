@@ -60,8 +60,7 @@
                      10 140/60
                      ))
 
-;(defn create-possible-workoouts)
-
+; also the number of sets of that duration
 (defn create-intervals
   ([type duration]
   (let [total-min (type total-duration-min)
@@ -85,14 +84,11 @@
          (create-duration-range (+ min-duration 1) max-duration (conj durations  min-duration))
          :else durations)))
 
-
-
-
 (defn tempo-workout
-  ([count duration] (tempo-workout count duration (list (struct workout :RR 5)))) ; add 5 minute warmup to the start
+  ([duration count] (tempo-workout duration count (list (struct workout :RR 5)))) ; add 5 minute warmup to the start
   ([count duration workouts]
    (cond (> count 0)
-         (tempo-workout (- count 1) duration (conj workouts (struct workout :RI duration)))
+         (tempo-workout duration (- count 1) (conj workouts (struct workout :RI duration)))
          :else
          (conj workouts (struct workout :RR 5))))) ; add 5 minute cooldown at the end
 
@@ -119,6 +115,18 @@
         ]
   (println running-interval)
   ))
+
+(defn create-possible-workouts
+  ([type]
+  (let [durations (create-duration-range type)]
+   (create-possible-workouts type durations (list))
+   ))
+  ([type durations combinations]
+   (if (empty? durations) combinations
+       (let [duration (first durations)
+             intervals (create-intervals type duration)]
+     (create-possible-workouts type (rest durations) (conj (map (partial tempo-workout duration) intervals) combinations))))
+   ))
 
 (defn -main
   "Creates a training plan"
