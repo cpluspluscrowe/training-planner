@@ -68,11 +68,15 @@
          :else
          workouts)))
 
-
-
 (defn get-workout-tss [workout]
   (let [rpe (intensities (:type workout))]
     (* (get intensity-tss rpe) (:duration workout))
+    ))
+
+(defn get-workouts-tss [workouts]
+  (if (empty? workouts)
+    0
+    (+ (get-workout-tss (first workouts)) (get-workouts-tss (rest workouts)))
     ))
 
 (defn have-tss-for-workout? [workout goal-tss]
