@@ -60,6 +60,32 @@
                      10 140/60
                      ))
 
+(defn create-intervals
+  ([type duration]
+  (let [total-min (type total-duration-min)
+        total-max (type total-duration-max)
+        max-intervals (int (/ total-max duration))
+        min-intervals (int (/ total-min duration))]
+    (create-intervals min-intervals max-intervals (list))))
+  ([min-intervals max-intervals intervals]
+   (cond (< min-intervals (+ max-intervals 1))
+         (create-intervals (+ min-intervals 1) max-intervals (conj intervals min-intervals))
+         :else intervals)))
+
+(defn create-duration-range
+  ([type-of-workout]
+  (let [min-duration (type-of-workout set-duration-min)
+        max-duration (type-of-workout set-duration-max)]
+    (create-duration-range min-duration max-duration (list))
+    ))
+  ([min-duration max-duration durations]
+   (cond (< min-duration (+ max-duration 1))
+         (create-duration-range (+ min-duration 1) max-duration (conj durations  min-duration))
+         :else durations)))
+
+
+
+
 (defn tempo-workout
   ([count duration] (tempo-workout count duration (list)))
   ([count duration workouts]
@@ -81,8 +107,6 @@
 
 (defn have-tss-for-workout? [workout goal-tss]
 (> (get-workout-tss workout) goal-tss))
-
-
 
 (defn TSS [run-type-durations]
   (let [running-interval (:RI run-type-durations)
