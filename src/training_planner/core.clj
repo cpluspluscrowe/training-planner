@@ -60,6 +60,16 @@
                      10 140/60
                      ))
 
+(defn tempo-workout
+  ([count duration] (tempo-workout count duration (list)))
+  ([count duration workouts]
+   (cond (> count 0)
+         (tempo-workout (- count 1) duration (conj workouts (struct workout :RI duration)))
+         :else
+         workouts)))
+
+
+
 (defn get-workout-tss [workout]
   (let [rpe (intensities (:type workout))]
     (* (get intensity-tss rpe) (:duration workout))
