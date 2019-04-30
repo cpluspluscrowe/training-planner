@@ -60,6 +60,8 @@
                      10 140/60
                      ))
 
+;(defn create-possible-workoouts)
+
 (defn create-intervals
   ([type duration]
   (let [total-min (type total-duration-min)
@@ -87,12 +89,12 @@
 
 
 (defn tempo-workout
-  ([count duration] (tempo-workout count duration (list)))
+  ([count duration] (tempo-workout count duration (list (struct workout :RR 5)))) ; add 5 minute warmup to the start
   ([count duration workouts]
    (cond (> count 0)
          (tempo-workout (- count 1) duration (conj workouts (struct workout :RI duration)))
          :else
-         workouts)))
+         (conj workouts (struct workout :RR 5))))) ; add 5 minute cooldown at the end
 
 (defn get-workout-tss [workout]
   (let [rpe (intensities (:type workout))]
