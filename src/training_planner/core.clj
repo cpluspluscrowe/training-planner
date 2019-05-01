@@ -9,10 +9,10 @@
 
 (def intensities (hash-map
                    :RI 10
-                   :TR 8.5
+                   :TR 8
                    :SSR 7
-                   :ER 5.5
-                   :RR 4.5
+                   :ER 5
+                   :RR 4
                    ))
 
 (def set-duration-min (hash-map
@@ -75,7 +75,7 @@
 
 (defn create-duration-range
   ([type-of-workout]
-  (let [min-duration (type-of-workout set-duration-min)
+  (let [min-duration (max 1 (type-of-workout set-duration-min))
         max-duration (type-of-workout set-duration-max)]
     (create-duration-range min-duration max-duration (list))
     ))
@@ -84,26 +84,29 @@
          (create-duration-range (+ min-duration 1) max-duration (conj durations  min-duration))
          :else durations)))
 
+(defstruct session :workouts)
+
 (defn tempo-workout
   ([duration count] (tempo-workout duration count (list (struct workout :RR 5)))) ; add 5 minute warmup to the start
-  ([count duration workouts]
+  ([duration count workouts]
    (cond (> count 0)
          (tempo-workout duration (- count 1) (conj workouts (struct workout :RI duration)))
          :else
-         (conj workouts (struct workout :RR 5))))) ; add 5 minute cooldown at the end
+         (struct session (conj workouts (struct workout :RR 5)))))) ; add 5 minute cooldown at the end
 
 (defn get-workout-tss [workout]
   (let [rpe (intensities (:type workout))]
     (* (get intensity-tss rpe) (:duration workout))
     ))
 
-(defn get-workouts-tss [workouts]
+(defn get-workouts-tss [session]
+  (let [workouts (:workouts session)]
   (if (empty? workouts)
     0
     (+ (get-workout-tss (first workouts)) (get-workouts-tss (rest workouts)))
-    ))
+    )))
 
-(defn have-tss-for-workout? [workout goal-tss]
+(defn have-tss-for-workout? [goal-tss workout]
 (> (get-workout-tss workout) goal-tss))
 
 (defn TSS [run-type-durations]
@@ -113,8 +116,10 @@
         endurance (:ER run-type-durations)
         recovery (:RR run-type-durations)
         ]
-  (println running-interval)
   ))
+
+(defn generate-intervals-at-duration [duration intervals]
+  (map (partial tempo-workout duration) intervals))
 
 (defn create-possible-workouts
   ([type]
@@ -125,8 +130,14 @@
    (if (empty? durations) combinations
        (let [duration (first durations)
              intervals (create-intervals type duration)]
-     (create-possible-workouts type (rest durations) (conj (map (partial tempo-workout duration) intervals) combinations))))
+         (create-possible-workouts type (rest durations)
+                                   (conj (generate-intervals-at-duration duration intervals) combinations))))
    ))
+
+(defn get-workouts-for-tss [type tss]
+  (let [possible-workouts (create-possible-workouts type)]
+    (filter (partial have-tss-for-workout? tss) possible-workouts)
+    ))
 
 (defn -main
   "Creates a training plan"
