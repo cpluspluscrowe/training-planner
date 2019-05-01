@@ -5,5 +5,6 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.0"]]
   :main ^:skip-aot training-planner.core
+  :plugins [[lein-cljfmt "0.6.4"]]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

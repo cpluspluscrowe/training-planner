@@ -6,20 +6,16 @@
   (testing "FIXME, I fail."
     (is (= 0 0))))
 
-
 (deftest get-workout-tss-test
   (let [workout (struct workout :RI 3)]
-    (is (= (get-workout-tss workout) 7))
-   ))
+    (is (= (get-workout-tss workout) 7))))
 
 (deftest requires-too-much-tss-test
   (let [workout (struct workout :RI 3)
         allowed-tss 6]
-    (is (= (have-tss-for-workout? workout allowed-tss)) true)
-  ))
+    (is (= (have-tss-for-workout? workout allowed-tss)) true)))
 
 (deftest have-tss-for-workout-test2
   (let [workout (struct workout :RI 3)
         allowed-tss 8]
-    (is (= (have-tss-for-workout? workout allowed-tss)) false)
-    ))
+    (is (= (have-tss-for-workout? workout allowed-tss)) false)))
