@@ -105,17 +105,6 @@
 (defn map-session-workouts-to-tss [sessions]
   (map get-workouts sessions))
 
-(defn have-tss-for-workouts?
-  ([goal-tss workouts] (have-tss-for-workouts? goal-tss workouts goal-tss))
-  ([goal-tss workouts tss-left]
-                                 (cond (and (> tss-left 0) (not (empty? workouts)))
-                                          (have-tss-for-workouts? goal-tss (rest workouts) (- goal-tss (get-workout-tss (first workouts))))
-                                          (or (empty? workouts) (not (> tss-left 0))) false
-:else (println "something went wrong")
-                                          )
-                                       ))
-                                          
-
 (defn have-tss-for-workout? [goal-tss workout]
   (> (get-workout-tss workout) goal-tss))
 
@@ -141,12 +130,10 @@
                                    (conj (generate-intervals-at-duration duration intervals) combinations))))))
 
 (defn get-workouts-for-tss [type tss]
-  (let [possible-workouts (create-possible-workouts type)
-        workouts (map #(:workouts %) possible-workouts)]
-    (filter #(have-tss-for-workouts? tss %) workouts)))
+  (let [sessions (create-possible-workouts type)]
+    (map #(not (< tss %)) (map get-workouts-tss sessions))))
 
 (defn -main
   "Creates a training plan"
   [& args]
-  (TSS (hash-map :RI 1 :TR 2 :SSR 3 :ER 4 :RR 5))
   (println "Go run!!"))
