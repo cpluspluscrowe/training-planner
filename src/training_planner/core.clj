@@ -133,6 +133,28 @@
 (defn ngt [goal-tss workout-tss]
   (not (< goal-tss workout-tss)))
 
+(defstruct session-tss :session :tss)
+
+(defn zip [sessions tss]
+  (partition 2 (interleave sessions tss)))
+
+;(defn get-sessions-tsses [sessions]
+;  (let [tsses (map get-workouts-tss sessions)]
+;     (zip sessions tsses)
+;    ))
+
+(defn get-session-tsses [session]
+  (let [tss (get-workouts-tss session)]
+    (struct session-tss session tss)))
+
+(defn filter-session-tsses-by-tss [session-tss goal-tss]
+  (let [workout-tss (get-workouts-tss (:session session-tss))]
+        (ngt goal-tss workout-tss)))
+
+(defn get-session-tss-under-tss [type tss]
+    (let [sessions (create-possible-workouts type)
+          session-tsses (map get-session-tsses sessions)]
+      (filter-session-tsses-by-tss session-tsses tss)))
 (defn get-workouts-for-tss [type tss]
   (let [sessions (create-possible-workouts type)
         workouts-tss (map get-workouts-tss sessions)]
@@ -141,5 +163,5 @@
 (defn -main
   "Creates a training plan"
   [& args]
-  (println (get-workouts-for-tss :RI 50))
+  (println (get-session-tss-under-tss :RI 100))
   (println "Go run!!"))
