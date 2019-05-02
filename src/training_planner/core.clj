@@ -1,5 +1,6 @@
 (ns training-planner.core
   (:use clojure.test)
+  (:require [clojure.string :as str])
   (:gen-class))
 
                                         ; shoot for M: 80, T: 130, W: 50 Th: 100: F: 0, S: 300, S: 50
@@ -91,13 +92,13 @@
 
 (defn get-workout-tss [workout]
   (let [rpe (intensities (:type workout))]
-    (* (get intensity-tss rpe) (:duration workout))))
+    (int (* (get intensity-tss rpe) (:duration workout)))))
 
-(defn get-workouts-tss [session]
-  (let [workouts (:workouts session)]
-    (if (empty? workouts)
-      0
-      (+ (get-workout-tss (first workouts)) (get-workouts-tss (rest workouts))))))
+(defn get-workouts-tss [workouts]
+  (cond (:workouts workouts) (get-workouts-tss (:workouts workouts))
+        (empty? workouts) 0
+        :else
+           (+ (get-workout-tss (first workouts)) (get-workouts-tss (rest workouts)))))
 
 (defn get-workouts [session]
   (get session :workouts))
@@ -129,11 +130,16 @@
          (create-possible-workouts type (rest durations)
                                    (conj (generate-intervals-at-duration duration intervals) combinations))))))
 
+(defn ngt [goal-tss workout-tss]
+  (not (< goal-tss workout-tss)))
+
 (defn get-workouts-for-tss [type tss]
-  (let [sessions (create-possible-workouts type)]
-    (map #(not (< tss %)) (map get-workouts-tss sessions))))
+  (let [sessions (create-possible-workouts type)
+        workouts-tss (map get-workouts-tss sessions)]
+    (filter (partial ngt tss) workouts-tss)))
 
 (defn -main
   "Creates a training plan"
   [& args]
+  (println (get-workouts-for-tss :RI 50))
   (println "Go run!!"))
