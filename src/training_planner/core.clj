@@ -82,11 +82,12 @@
 
 (defstruct session :workouts)
 
+; Generates a session with count tempo runs, each of the duration, surrounded by warmup/cooldowns
 (defn tempo-workout
   ([duration count] (tempo-workout duration count (list (struct workout :RR 5)))) ; add 5 minute warmup to the start
   ([duration count workouts]
    (cond (> count 0)
-         (tempo-workout duration (- count 1) (conj workouts (struct workout :RI duration)))
+         (tempo-workout duration (- count 1) (conj workouts (struct workout :TR duration)))
          :else
          (struct session (conj workouts (struct workout :RR 5)))))) ; add 5 minute cooldown at the end
 
@@ -155,13 +156,28 @@
     (let [sessions (create-possible-workouts type)
           session-tsses (map get-session-tsses sessions)]
       (filter-session-tsses-by-tss session-tsses tss)))
+
+(defn tss-more-than-pair? [tss pair]
+  (ngt tss (second pair)))
+
+(defn session-pair-compare [pair1 pair2]
+  (let [p1 (second pair1)
+        p2 (second pair2)]
+    (> p1 p2)
+    ))
+
 (defn get-workouts-for-tss [type tss]
   (let [sessions (create-possible-workouts type)
-        workouts-tss (map get-workouts-tss sessions)]
-    (filter (partial ngt tss) workouts-tss)))
+        workouts-tss (map get-workouts-tss sessions)
+        zipped (zipmap sessions workouts-tss)]
+    (sort session-pair-compare
+          (filter (partial tss-more-than-pair? tss) zipped)))
+  )
 
 (defn -main
   "Creates a training plan"
   [& args]
   (println (get-session-tss-under-tss :RI 100))
   (println "Go run!!"))
+
+; Purpose of this program is to generate possible workouts given a type and TSS
